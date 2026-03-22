@@ -1,82 +1,240 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>Personal Portfolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小组PPT提交系统 - 20组</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 16px;
+        }
+
+        /* 小组网格布局 */
+        .group-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* 单个小组卡片 */
+        .group-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s;
+        }
+
+        .group-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .group-title {
+            font-size: 18px;
+            color: #2d3436;
+            margin-bottom: 15px;
+            font-weight: bold;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+        }
+
+        /* 上传按钮 */
+        .upload-btn {
+            display: inline-block;
+            padding: 8px 15px;
+            background: #3498db;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .upload-btn:hover {
+            background: #2980b9;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* 文件列表 */
+        .file-list {
+            font-size: 14px;
+        }
+
+        .file-item {
+            padding: 8px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+
+        .file-name {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .preview {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .download {
+            background: #f39c12;
+            color: white;
+        }
+
+        .empty {
+            color: #95a5a6;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>小组PPT提交展示系统</h1>
+            <p>共20个小组，支持上传、预览、下载PPT文件</p>
+        </div>
 
-    <p>Hello everyone,</p>
-    <p>I am [Li Weitong]. Welcome to my personal website.</p>
-    <p>I am glad you are here. Below is a summary of my professional background:</p>
+        <!-- 20个小组网格 -->
+        <div class="group-grid" id="groupContainer"></div>
+    </div>
 
-    <hr>
+    <script>
+        // 生成20个小组
+        const groupCount = 20;
+        const container = document.getElementById('groupContainer');
 
-    ### 🎓 Education
-    <ul>
-        <li><strong>[Hong Kong Baptist University(HKBU)]</strong> – [Bsc(Hons)], [2023-2027]</li>
-        <li>Major: [Artificial Intelligence] (GPA: [3.8/4.0] top 5%)</li>
-        <li><strong>[Beijing normal-Hong Kong Baptist University(BNBU)]</strong> – [Bsc(Hons)], [2023-2027]</li>
-        <li>Major: [Artificial Intelligence] (GPA: [3.8/4.0] top 5%)</li>
-    </ul>
+        // 初始化所有小组
+        function initGroups() {
+            for (let i = 1; i <= groupCount; i++) {
+                const groupCard = document.createElement('div');
+                groupCard.className = 'group-card';
+                groupCard.innerHTML = `
+                    <div class="group-title">第 ${i} 小组</div>
+                    <label class="upload-btn">
+                        <input type="file" accept=".ppt,.pptx" onchange="uploadFile(${i}, this)">
+                        上传PPT
+                    </label>
+                    <div class="file-list" id="fileList${i}">
+                        <div class="empty">暂无文件</div>
+                    </div>
+                `;
+                container.appendChild(groupCard);
+            }
+            // 加载本地存储的文件
+            loadAllFiles();
+        }
 
-### 📝 Publications
-    <ul>
-        <li>
-            <strong>Domain-Adaptive Fine-Tuning of HI-Diff for Enhanced Microscopy Deblurring.</strong><br>
-            Junkai Lin*, Weitong Li†, Di Li† (2025). <br>
-            <em>IEEE ICVRV 2025</em>, Bogotá, Colombia. (Accepted, CCF-C)
-        </li>
-        <br>
-        <li>
-            <strong>PRISM: Principled Reasoning for Identifying and Suppressing Model Biases at Scale.</strong><br>
-            Xunfei Zhu*†, Weitong Li†, Junkai Lin (2025). <br>
-            <em>PRICAI 2025</em>, Wellington, New Zealand. (Accepted, CORE-B, CCF-C)
-        </li>
-    </ul>
+        // 上传文件
+        function uploadFile(groupId, input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            // 只允许PPT/PPTX
+            if (!file.name.endsWith('.ppt') && !file.name.endsWith('.pptx')) {
+                alert('请上传PPT或PPTX格式文件！');
+                input.value = '';
+                return;
+            }
 
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // 保存文件信息
+                const fileData = {
+                    name: file.name,
+                    url: e.target.result,
+                    size: (file.size / 1024 / 1024).toFixed(2) + 'MB'
+                };
+                saveFile(groupId, fileData);
+                renderFileList(groupId, fileData);
+                input.value = '';
+            };
+            reader.readAsDataURL(file);
+        }
 
+        // 保存文件到本地存储
+        function saveFile(groupId, fileData) {
+            localStorage.setItem(`group_${groupId}`, JSON.stringify(fileData));
+        }
 
-   ### 💼 Internship Experience
-    <ul>
-        <li><strong>[Merck & Co., Inc.]</strong> – [AI engineer], [2025.12-2026.4]</li>
-        <li>Responsibilities: <li>Developed an **LLM-based drug-protein modification system** aimed at enhancing the binding affinity between target proteins and drug candidates while improving structural rationality.</li>
-    </ul>
-   ### 💼 Internship Experience
-    <ul>
-        <li>
-            <strong>Digital Guangdong Network Construction Co., Ltd.</strong> – [Your Job Title], [Date Range]
-            <br>
-            <em>(China Electronics Corporation Group)</em>
-        </li>
-        <li>Responsibilities: <li>Executed **local deployment of Large Language Models (LLMs)** and performed **fine-tuning** (SFT/LoRA) to optimize performance for domain-specific tasks.</li>
-    </ul>
-    ### 🏆 Honors & Awards
-    <ul>
-        <li><strong>First-Class Academic Scholarship</strong> (6,000 RMB) – [BNBU], [2023-2024]</li>
-        <li><strong>First-Class Academic Scholarship</strong> (6,000 RMB) – [BNBU], [2024-2025]</li>
-        <li><strong>Greater Bay Area Research & Study Scholarship</strong> (5,000 HKD) – [HKBU], [Year]</li>
-        <li><strong>National College Student Innovation and Entrepreneurship Scholarship</strong> (80,000 RMB) – [BNBU], [2025]</li>
-        <li><strong>Second Prize</strong>, Contemporary Undergraduate Mathematical Contest in Modeling (CUMCM), Provincial Level, [2025]</li>
-        <li><strong>Third Prize</strong>, "Challenge Cup" National Undergraduate Academic and Technological Works Competition, Provincial Level, [2025</li>
-        <li><strong>CSDN AI Top Creator</strong> (5,000+ Followers) – Recognized for high-quality technical content in Artificial Intelligence, 2025]</li>
-    </ul>
+        // 渲染文件列表
+        function renderFileList(groupId, fileData) {
+            const listEl = document.getElementById(`fileList${groupId}`);
+            listEl.innerHTML = `
+                <div class="file-item">
+                    <div class="file-name">${fileData.name} (${fileData.size})</div>
+                    <div class="file-actions">
+                        <a href="${fileData.url}" target="_blank" class="action-btn preview">在线预览</a>
+                        <a href="${fileData.url}" download="${fileData.name}" class="action-btn download">下载</a>
+                    </div>
+                </div>
+            `;
+        }
 
-    ### 💻 Skills & Languages
-    <ul>
-        <li><strong>Programming:</strong> Python (PyTorch), Java, C++, SQL, LLM Fine-tuning</li>
-        <li><strong>Languages:</strong> 
-            English (Professional), Mandarin (Native), Teochew (Native), Cantonese (Fluent), Japanese (Basic)
-        </li>
-    </ul>
+        // 加载所有小组已上传文件
+        function loadAllFiles() {
+            for (let i = 1; i <= groupCount; i++) {
+                const data = localStorage.getItem(`group_${i}`);
+                if (data) {
+                    renderFileList(i, JSON.parse(data));
+                }
+            }
+        }
 
-    <hr>
-
-    <p>You can find me on these platforms:</p>
-    <ul>
-        <li><a href=https://blog.csdn.net/2401_83912923</a></li>>
-      
-    </ul>
-
+        // 页面加载完成初始化
+        window.onload = initGroups;
+    </script>
 </body>
 </html>
